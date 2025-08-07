@@ -1,0 +1,9 @@
+# Ghost echo path + visibility tracking
+header:
+  - msg_id
+  - from_node
+  - heard_by
+  - reflected_to
+  - logged_locally
+  - timestamp
+entries: []

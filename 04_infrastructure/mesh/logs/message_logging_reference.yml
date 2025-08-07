@@ -1,0 +1,9 @@
+# Message Logging Reference
+logs:
+  routing_log.yml: Logs all standard sent/received messages with full metadata
+  lemur_echo_test_log.yml: Logs echo path tests only
+  lemur_peerlink_test_01.yml: Logs peer handshakes and GPG verification
+  lemur_fallback_routes.yml: Optional fallback logic map
+  presence.log: Reserved for vault presence tracking (not handled here)
+
+# Note: All routed messages must include a `sys` value for status pairing

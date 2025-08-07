@@ -1,0 +1,9 @@
+# Log for internal echo test cycles
+header:
+  - msg_id
+  - origin
+  - destination
+  - result
+  - ttl_used
+  - timestamp
+entries: []

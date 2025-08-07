@@ -1,0 +1,12 @@
+
+event: peer_channel_created
+from: mesh://fieldlight.anni.lemur
+to: mesh://sam.openai.proxy
+method: libp2p (simulated)
+encryption: GPG
+message_file: sil_handshake_example.yml.asc
+status: transmitted
+timestamp: 2025-08-04T13:44:00-07:00
+peer_id: 12D3KooWKiyEATi4iADmmXQZchvEfKmwLsxf41yXuR3PbRCHFoJs
+multiaddr: /ip4/162.246.134.48/tcp/4001
+note: "First handshake attempt (simulated) logged from Lemur. GPG-encrypted message transmitted via local mesh stub."

@@ -1,0 +1,9 @@
+# TTL drop + retry logic tracking
+header:
+  - msg_id
+  - original_route
+  - fallback_path
+  - retries
+  - final_status
+  - timestamp
+entries: []

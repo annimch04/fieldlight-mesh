@@ -1,0 +1,19 @@
+﻿# Global message routing log
+header:
+  - msg_id
+  - message_type
+  - origin
+  - destination
+  - trust_level
+  - status
+  - timestamp
+entries: []
+	- sys: FL-LEMUR-20250805-1644
+  type: mesh-send
+  origin: mesh://fieldlight.anni.lemur
+  destination: mesh://samuel.openai.proxy
+  ttl: 4
+  trust_level: declared
+  auth: gpg
+  status: sent
+  timestamp: 2025-08-05T16:44:00-07:00

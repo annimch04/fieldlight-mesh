@@ -1,0 +1,12 @@
+```YAML
+Log for general audit of all sent and received messages
+header:
+  - msg_id
+  - message_type
+  - direction
+  - origin
+  - destination
+  - result
+  - timestamp
+entries: []
+```
