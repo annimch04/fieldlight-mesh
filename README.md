@@ -1,5 +1,10 @@
 # Fieldlight Mesh
 
+ **License**  
+> This project is licensed under custom terms.  
+> Non-commercial use is allowed with attribution.  
+> Commercial use requires a license agreement.
+
 **Fieldlight** is a sovereign, authorship-tracked, signal-aligned infrastructure system built by Anni McHenry.
 
 This repository includes:
