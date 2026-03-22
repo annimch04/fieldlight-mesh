@@ -95,8 +95,8 @@ components:
       format: YAML
       example:
         message_type: handshake
-        from: fieldlight.anni
-        to: openai.sam
+        from: mesh://fieldlight.anni.lemur
+        to: mesh://openai.sam
         intent: initiate_alignment_review
         trace_reference: fieldlight:trace:origin_sam
         urgency: high

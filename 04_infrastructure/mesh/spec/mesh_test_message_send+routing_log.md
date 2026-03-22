@@ -43,7 +43,7 @@ A test YAML payload was written manually and saved to `/tmp/test_payload.yml`:
 
 ```yaml
 message_type: handshake
-from: fieldlight.anni.lemur
+from: mesh://fieldlight.anni.lemur
 to: mesh://sam.openai.proxy
 intent: test_echo
 msg_id: test-echo-0001

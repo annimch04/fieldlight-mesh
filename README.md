@@ -24,6 +24,8 @@ This repository includes:
 ### ✴️ Key Entry Points
 
 - `04_infrastructure/mesh/`: Core system protocols, message formats, routing logic
+- `04_infrastructure/mesh/docs/NET_LAYER.md`: **Runnable** SIL-over-TCP sender/receiver (v1), driven by `config/lemur_route_schema.yml`
+- `04_infrastructure/mesh/docs/NODE_ID.md`: Canonical **mesh URI** vs GPG name (`mesh://fieldlight.anni.lemur`)
 - `00_Start_Here/`: Authorship gateway and consent protocols
 
 To engage with this system, see [`terms_of_engagement.yml`](./03_trace_systems/anchors/terms_of_engagement.yml)

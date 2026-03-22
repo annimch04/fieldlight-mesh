@@ -1,0 +1,10 @@
+# Handshake — requires gpg_sig in schema unless FIELDLIGHT_INSECURE_SKIP_GPG=1 on receiver.
+message_type: handshake
+from: mesh://peer.a.example
+to: mesh://fieldlight.anni.lemur
+intent: mesh_hello
+msg_id: hs-demo-001
+gpg_signature: |
+  -----BEGIN PGP SIGNATURE-----
+  (stub — replace with real detached signature in production)
+  -----END PGP SIGNATURE-----

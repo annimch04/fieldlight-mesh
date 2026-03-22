@@ -1,0 +1,6 @@
+# SIL ping — minimal round-trip test (see docs/NET_LAYER.md).
+message_type: ping
+from: mesh://peer.a.example
+to: mesh://fieldlight.anni.lemur
+intent: reachability_check
+msg_id: ping-demo-001

@@ -224,7 +224,7 @@ trigger_map:
     respond_with: "trace_received_ack"
     log_only: false
 
-  - match: "sam.openai.proxy"
+  - match: "mesh://sam.openai.proxy"
     respond_with: "hello_sam"
     log_only: false
 

@@ -2,7 +2,7 @@
 
 ---
 
-node_id: mesh://fieldlight-anni-lemur
+node_id: mesh://fieldlight.anni.lemur
 human_operator: Anni McHenry
 role: sovereign
 trust_class: peer

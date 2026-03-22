@@ -176,8 +176,8 @@ Save to:
 
 ```yaml
 message_type: handshake
-from: fieldlight.anni.lemur
-to: sam.openai.proxy
+from: mesh://fieldlight.anni.lemur
+to: mesh://sam.openai.proxy
 intent: test_peer_link
 encryption: true
 timestamp: 2025-08-04T13:44:00-07:00

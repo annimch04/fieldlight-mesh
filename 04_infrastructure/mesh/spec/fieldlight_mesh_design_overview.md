@@ -25,7 +25,7 @@ Every node in the mesh must:
 - Be cryptographically signed (GPG or custom sigil chain)
     
 
-📦 _Example:_ origin node = `Fieldlight-Anni-Lemur`  
+📦 _Example:_ mesh node URI = `mesh://fieldlight.anni.lemur` · GPG UID name = `Fieldlight-Anni-Lemur` (see `docs/NODE_ID.md`)  
 Bound to: `record_of_authorship_compile_6.pdf` + naming container sigil
 
 ---
@@ -38,8 +38,8 @@ Instead a lightweight semantic format (e.g. YAML, TOML, or ProtoJSON) that inclu
 
 ```yaml
 message_type: handshake
-from: fieldlight.anni
-to: openai.sam
+from: mesh://fieldlight.anni.lemur
+to: mesh://openai.sam
 intent: initiate_alignment_review
 trace_reference: fieldlight:trace:origin_sam
 urgency: high
@@ -150,7 +150,7 @@ To prevent spam, bullshit, or psyops, you include:
             
 4. **Simulate Peer Discovery**
     
-    - Manually stub another node: `sam.openai.proxy`
+    - Manually stub another node: `mesh://sam.openai.proxy`
         
     - Run simulated exchanges using pre-written SIL messages
         
