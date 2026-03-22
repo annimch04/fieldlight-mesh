@@ -38,6 +38,8 @@ routes:
     log: true
     msg_id: auto
 
+  # ping: minimal reachability test — no GPG required (auth optional).
+  # Handler must return response intent: pong (see fieldlight_mesh/handler.py).
   ping:
     trust_required: any
     ttl: 1

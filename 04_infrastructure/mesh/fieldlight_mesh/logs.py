@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -119,3 +120,8 @@ def append_audit_log(
 def make_sys_id(node_short: str) -> str:
     """Human-readable correlation id (style: FL-LEMUR-YYYYMMDD-HHMMSS)."""
     return f"FL-{node_short}-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+
+
+def log_nonfatal_warning(exc: BaseException, context: str) -> None:
+    """Print to stderr; never raises."""
+    print(f"[fieldlight_mesh] logging failed (non-fatal) {context}: {exc}", file=sys.stderr)

@@ -9,7 +9,7 @@ import socket
 
 from . import sil
 from .frame import read_frame, write_frame
-from .logs import append_audit_log, append_routing_log, make_sys_id
+from .logs import append_audit_log, append_routing_log, log_nonfatal_warning, make_sys_id
 
 
 def send_sil_file(
@@ -40,37 +40,39 @@ def send_sil_file(
     if log_writes and routing_log_path:
         mid = sil.ensure_msg_id(msg)
         sys_id = make_sys_id(node_short)
-        append_routing_log(
-            routing_log_path,
-            sys_id=sys_id,
-            message_type=str(msg.get("message_type")),
-            origin=str(msg.get("from")),
-            destination=str(msg.get("to")),
-            trust_level="outbound",
-            status="sent",
-            msg_id=mid,
-        )
-        if audit_log_path:
-            append_audit_log(
-                audit_log_path,
-                msg_id=mid,
+        try:
+            append_routing_log(
+                routing_log_path,
+                sys_id=sys_id,
                 message_type=str(msg.get("message_type")),
-                direction="outbound",
                 origin=str(msg.get("from")),
                 destination=str(msg.get("to")),
-                result="sent",
+                trust_level="outbound",
+                status="sent",
+                msg_id=mid,
             )
-        # Log received response summary
-        append_routing_log(
-            routing_log_path,
-            sys_id=sys_id,
-            message_type="response",
-            origin=str(resp.get("from", "")),
-            destination=str(resp.get("to", "")),
-            trust_level="inbound",
-            status=f"response_{resp.get('status', 'unknown')}",
-            msg_id=str(resp.get("msg_id", "")),
-            extra={"in_reply_to": resp.get("in_reply_to"), "intent": resp.get("intent")},
-        )
+            if audit_log_path:
+                append_audit_log(
+                    audit_log_path,
+                    msg_id=mid,
+                    message_type=str(msg.get("message_type")),
+                    direction="outbound",
+                    origin=str(msg.get("from")),
+                    destination=str(msg.get("to")),
+                    result="sent",
+                )
+            append_routing_log(
+                routing_log_path,
+                sys_id=sys_id,
+                message_type="response",
+                origin=str(resp.get("from", "")),
+                destination=str(resp.get("to", "")),
+                trust_level="inbound",
+                status=f"response_{resp.get('status', 'unknown')}",
+                msg_id=str(resp.get("msg_id", "")),
+                extra={"in_reply_to": resp.get("in_reply_to"), "intent": resp.get("intent")},
+            )
+        except Exception as exc:
+            log_nonfatal_warning(exc, "client append_routing_log/audit")
 
     return resp
