@@ -1,5 +1,7 @@
 # Live test checklist — external ping (you send → Peej receives)
 
+Current execution state is tracked in [`TEST_STATUS.md`](./TEST_STATUS.md).
+
 ## Success criteria (v1)
 
 **Pass =** sender prints a YAML **`response`** with **`status: 200`** and **`intent: pong`** returned from the remote host.

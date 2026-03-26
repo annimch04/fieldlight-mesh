@@ -1,6 +1,6 @@
 # First external live test — edit `to:` to Peej's exact mesh URI (see LIVE_TEST_PEEJ.md).
 message_type: ping
 from: mesh://fieldlight.anni.lemur
-to: mesh://REPLACE_WITH_PEEJ_EXACT_NODE_ID
+to: mesh://peejmachine
 intent: peej_live_test_01
 msg_id: peej-live-0001

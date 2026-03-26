@@ -1,8 +1,9 @@
 # SIL TCP network layer (v1)
 
 Canonical Lemur mesh id: see [`NODE_ID.md`](./NODE_ID.md) (`mesh://fieldlight.anni.lemur`).
+For technical navigation, start with [`TECH_INDEX.md`](./TECH_INDEX.md).
 
-**External live test:** see [`LIVE_TEST_PEEJ.md`](./LIVE_TEST_PEEJ.md) and payload `send/examples/ping_peej_live_test_01.yml`. **Ingress / dispatch contract:** [`INGRESS_CONTRACT.md`](./INGRESS_CONTRACT.md).
+**External live test:** see [`LIVE_TEST_PEEJ.md`](./LIVE_TEST_PEEJ.md) and payload `send/examples/ping_peej_live_test_01.yml`. **Ingress / dispatch contract:** [`INGRESS_CONTRACT.md`](./INGRESS_CONTRACT.md). **Current status:** [`TEST_STATUS.md`](./TEST_STATUS.md).
 
 This directory implements a **minimal delivery + receiver** path for [SIL](https://github.com/annimch04/fieldlight-mesh) messages so two nodes can exchange YAML intents over the network, with behavior driven by `config/lemur_route_schema.yml`.
 
