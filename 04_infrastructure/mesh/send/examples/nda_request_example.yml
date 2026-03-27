@@ -1,0 +1,10 @@
+# Protocol-level NDA request example (transport/audit only).
+message_type: nda_request
+from: mesh://fieldlight.anni.lemur
+to: mesh://peejmachine
+msg_id: nda-req-0001
+nda_id: NDA-2026-0001
+document_hash: sha256:REPLACE_WITH_REAL_HASH
+document_name: mutual_nda_v1.pdf
+document_ref: https://example.invalid/nda/mutual_nda_v1.pdf
+intent: nda_exchange_request

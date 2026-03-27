@@ -1,0 +1,9 @@
+# Protocol-level NDA response example.
+message_type: nda_response
+from: mesh://peejmachine
+to: mesh://fieldlight.anni.lemur
+msg_id: nda-resp-0001
+in_reply_to: nda-req-0001
+nda_id: NDA-2026-0001
+decision: accepted
+intent: nda_exchange_response

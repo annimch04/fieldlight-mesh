@@ -49,6 +49,26 @@ routes:
     log: true
     msg_id: auto
 
+  # nda_request / nda_response: protocol exchange for NDA intent and decision.
+  # This is NOT a legal-signature-complete workflow by itself.
+  nda_request:
+    trust_required: peer
+    ttl: 2
+    fallback: [proxy]
+    destination_format: "mesh://{peer_id}/nda"
+    auth: optional
+    log: true
+    msg_id: auto
+
+  nda_response:
+    trust_required: peer
+    ttl: 2
+    fallback: [proxy]
+    destination_format: "mesh://{originator}/nda-response"
+    auth: optional
+    log: true
+    msg_id: auto
+
   response:
     trust_required: peer
     ttl: 3

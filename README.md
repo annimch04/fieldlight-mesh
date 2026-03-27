@@ -31,6 +31,7 @@ This repository includes:
 - `04_infrastructure/mesh/docs/INGRESS_CONTRACT.md`: Runtime contract (receive → validate → respond; TCP return path)
 - `04_infrastructure/mesh/docs/LIVE_TEST_PEEJ.md`: External ping checklist (success = `pong`, logs optional)
 - `04_infrastructure/mesh/docs/TEST_STATUS.md`: Current test status + blockers + retest commands
+- `04_infrastructure/mesh/docs/NDA_FLOW.md`: Protocol-level NDA exchange (`nda_request` / `nda_response`)
 - `00_Start_Here/`: Authorship gateway and consent protocols
 
 To engage with this system, see [`terms_of_engagement.yml`](./03_trace_systems/anchors/terms_of_engagement.yml)

@@ -178,6 +178,41 @@ def handle_inbound_sil(
             intent="trace_received",
         )
 
+    if mt == "nda_request":
+        nda_id = str(msg.get("nda_id", ""))
+        doc_hash = str(msg.get("document_hash", ""))
+        if not nda_id or not doc_hash:
+            return _response(
+                node_id=node_id,
+                to_peer=sender,
+                in_reply_to=mid,
+                status=422,
+                intent="nda_invalid",
+                extra={"detail": "nda_request requires nda_id and document_hash"},
+            )
+        # Protocol-level ack only; legal acceptance workflow lives above transport.
+        return _response(
+            node_id=node_id,
+            to_peer=sender,
+            in_reply_to=mid,
+            status=200,
+            intent="nda_received_review_required",
+            extra={
+                "nda_id": nda_id,
+                "document_hash": doc_hash,
+                "decision": "needs_review",
+            },
+        )
+
+    if mt == "nda_response":
+        return _response(
+            node_id=node_id,
+            to_peer=sender,
+            in_reply_to=mid,
+            status=200,
+            intent="nda_response_ack",
+        )
+
     if mt == "response":
         # Responses are logged; minimal ack
         return _response(
