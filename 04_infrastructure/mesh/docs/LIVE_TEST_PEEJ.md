@@ -1,6 +1,6 @@
 # Live test checklist — external ping (you send → Peej receives)
 
-Current execution state is tracked in [`TEST_STATUS.md`](./TEST_STATUS.md).
+Current execution state, timeline, and **blocked-path notes** are in [`TEST_STATUS.md`](./TEST_STATUS.md) (including **2026-03-29** Tailscale + `nc` proof + next steps).
 
 ## Success criteria (v1)
 
@@ -62,3 +62,34 @@ Use **`send/examples/ping_peej_live_test_01.yml`** (or copy it):
 - **`msg_id: peej-live-0001`**
 
 Update **`to:`** to Peej’s exact node id before sending.
+
+---
+
+## 7. Tailscale / multi-path — verify from the **sender** machine
+
+A successful `nc` or `sil_mesh` from **Peej’s phone** or another host on **his** tailnet proves **his** listener and **that** path. It does **not** prove the **sender’s** node can open TCP to the same address.
+
+**Before** treating `sil_mesh` as “wrong,” run on the **same OS** that runs `sil_mesh send`:
+
+```bash
+nc -vz 100.104.20.119 7750
+```
+
+- **succeeded** → proceed with `sil_mesh send`; if send still fails, compare **Python socket** vs `nc` (MTU, bind address, etc.).
+- **timeout / refused** → treat as **network path** (sender routing, firewall OUTPUT, tailscale ACLs, asymmetric path), not as SIL/schema bugs.
+
+**IPv6 vs Tailscale:** Prefer **one** agreed address family per session (Tailscale IPv4 **or** global IPv6) so everyone matches `--host` and firewall rules.
+
+### If transport works but output looks confusing
+
+Use a **plain HTTP** listener on the receiver (`python3 -m http.server 7750 --bind 0.0.0.0`) and **`curl -v`** from the sender to confirm **TCP + HTTP** before debugging SIL framing.
+
+### Asymmetric path / capture
+
+If **ICMP** or **tailscale ping** works but **TCP** does not from the sender, suspect **policy/routing** (not “listener down”). Optional: **tcpdump** on sender egress and receiver ingress on the next attempt; optional **reverse-direction** TCP (receiver → sender) to detect asymmetric blocks.
+
+---
+
+## 8. Sanity check — you’re not “thinking too much”
+
+Isolating **control-plane vs data-plane** (ping vs TCP to **port**), **proving the receiver locally**, and **proving path from the sender** are normal steps. The repo’s **pass** is still: **`response` with `pong`** from the remote `sil_mesh` receive; everything else is **diagnostics** to get there.
