@@ -21,11 +21,24 @@ This repository includes:
 
 ---
 
+### Node and Publication Boundary
+
+Lemur remains the Fieldlight source-of-truth node.
+
+The Mac is the publishing layer for Codex sessions, public drafts, documentation updates, and outward-facing artifacts.
+
+Octopus lives on the Mac as a publishing-layer witness. It may stage, package, and track artifacts, but it does not replace Lemur, Kestrel, Ghost, or source verification.
+
+See `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md` for the current publishing boundary.
+
+---
+
 ### ✴️ Key Entry Points
 
 - `04_infrastructure/mesh/`: Core system protocols, message formats, routing logic
 - `04_infrastructure/mesh/docs/TECH_INDEX.md`: Technical/operator documentation entrypoint
 - `04_infrastructure/mesh/docs/CANON_INDEX.md`: Canon/symbolic documentation entrypoint
+- `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md`: Mac/Octopus publishing boundary and export workflow
 - `04_infrastructure/mesh/docs/NET_LAYER.md`: **Runnable** SIL-over-TCP sender/receiver (v1), driven by `config/lemur_route_schema.yml`
 - `04_infrastructure/mesh/docs/NODE_ID.md`: Canonical **mesh URI** vs GPG name (`mesh://fieldlight.anni.lemur`)
 - `04_infrastructure/mesh/docs/INGRESS_CONTRACT.md`: Runtime contract (receive → validate → respond; TCP return path)
@@ -41,4 +54,3 @@ To engage with this system, see [`terms_of_engagement.yml`](./03_trace_systems/a
 > This is not a sandbox.  
 > This is not a simulation.  
 > This is a live-authored sovereign system.
-
