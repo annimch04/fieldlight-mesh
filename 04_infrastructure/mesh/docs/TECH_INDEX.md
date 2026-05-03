@@ -8,7 +8,7 @@ Use this index for runnable/runtime materials. This is the technical path.
 - `LIVE_TEST_PEEJ.md` - external test checklist
 - `TEST_STATUS.md` - current execution status and blockers
 - `CROSS_REPO_REFERENCES.md` - planned fieldlight-mesh/sanctum-zero reference map
-- `NDA_FLOW.md` - protocol-level NDA exchange flow (`nda_request` / `nda_response`)
+- `NDA_FLOW.md` - protocol-level NDA sharing, response, and execution-artifact tracking (`nda_request` / `nda_response` / `nda_execution`)
 - `PUBLISHING_LAYER.md` - Mac/Octopus publishing boundary for staged public artifacts
 
 Code paths:
