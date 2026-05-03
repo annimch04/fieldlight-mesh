@@ -13,8 +13,10 @@ Architecture/spec narrative (mixed, not purely operator runbooks):
 - `../spec/fieldlight_mesh_design_overview.md`
 - `../spec/fieldlight_mesh_high-level_execution_plan.md`
 - `../spec/fieldlight_mesh_phase3_overview.yml.md`
+- `PUBLISHING_LAYER.md` - Mac/Octopus publication boundary; Lemur remains source authority
 
 Notes:
 
 - Technical execution should reference `TECH_INDEX.md` first.
 - This split is for reader clarity and collaboration speed; it does not remove canon materials from the repository.
+- The publishing layer prepares outward-facing artifacts; it does not replace Lemur-side canon, Kestrel, Ghost, or source verification.
