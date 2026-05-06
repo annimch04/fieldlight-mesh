@@ -40,10 +40,15 @@ If `pip install` into the system interpreter works on your OS, you can use `pyth
 
 You should see a YAML `response` with `status: 200` and `intent: pong`.
 
+### Same machine — discovery and registry (validated)
+
+Instead of passing `--host` / `--port` on send, you can **advertise** `_fieldlight._tcp`, run **`sil_mesh discover`** to write **`config/discovered_peers.yml`**, then **`sil_mesh send … --use-registry`**. A full step list and success criteria are in [`DISCOVERY_PLAN.md`](./DISCOVERY_PLAN.md) (**Validated end-to-end — local discovery → registry → SIL send**, 2026-05-06).
+
 ## Two machines
 
 - Open the port in your firewall; use the listener’s LAN IP as `--host` on the sender.
 - Use the same `--node-id` on the receiver as the `to:` field in your SIL file.
+- Optional: run `sil_mesh discover` to build `config/discovered_peers.yml`, then send with **`--use-registry`** so `to:` selects `host`/`port` (see `DISCOVERY_PLAN.md`).
 
 ## Trust ACL (optional)
 

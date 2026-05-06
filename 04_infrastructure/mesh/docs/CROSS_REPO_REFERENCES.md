@@ -18,6 +18,7 @@ From `sanctum-zero` -> `fieldlight-mesh`:
 
 - runnable mesh transport layer entry (`docs/TECH_INDEX.md`)
 - current external test status (`docs/TEST_STATUS.md`)
+- peer discovery / registry / bridge plan (`docs/DISCOVERY_PLAN.md`)
 
 ## Rule for references
 

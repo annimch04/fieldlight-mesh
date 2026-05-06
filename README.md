@@ -35,7 +35,8 @@ See `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md` for the current publishing
 
 ### ✴️ Key Entry Points
 
-- `04_infrastructure/mesh/`: Core system protocols, message formats, routing logic
+- `04_infrastructure/mesh/`: Core system protocols, message formats, routing logic (`Makefile` for local checks)
+- `.github/workflows/ci.yml`: GitHub Actions — Python mesh smoke + Go `libp2p_peer_probe` build
 - `04_infrastructure/mesh/docs/TECH_INDEX.md`: Technical/operator documentation entrypoint
 - `04_infrastructure/mesh/docs/CANON_INDEX.md`: Canon/symbolic documentation entrypoint
 - `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md`: Mac/Octopus publishing boundary and export workflow
@@ -44,6 +45,7 @@ See `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md` for the current publishing
 - `04_infrastructure/mesh/docs/INGRESS_CONTRACT.md`: Runtime contract (receive → validate → respond; TCP return path)
 - `04_infrastructure/mesh/docs/LIVE_TEST_PEEJ.md`: External ping checklist (success = `pong`, logs optional)
 - `04_infrastructure/mesh/docs/TEST_STATUS.md`: Current test status + blockers + retest commands
+- `04_infrastructure/mesh/docs/DISCOVERY_PLAN.md`: LAN mDNS + libp2p discovery, peer registry, `sil_mesh discover` / `--use-registry` (includes **validated** local recipe → `pong`)
 - `04_infrastructure/mesh/docs/NDA_FLOW.md`: Protocol-level NDA exchange (`nda_request` / `nda_response`)
 - `00_Start_Here/`: Authorship gateway and consent protocols
 
