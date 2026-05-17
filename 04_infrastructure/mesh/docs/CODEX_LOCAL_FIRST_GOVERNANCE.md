@@ -2,7 +2,7 @@
 
 Status: proposed
 
-Related article: Fieldlight | The Self on the Wire (`PostHaven URL to add after publication`)
+Related article: [Fieldlight | The Self on the Wire](https://sayitplain.posthaven.com/fieldlight-the-self-on-the-wire)
 
 ## Purpose
 
@@ -101,4 +101,4 @@ Codex can reorient by reading Sanctum-style anchors and summaries, then perform 
 - Add example governed project folder
 - Add Codex reorientation checklist
 - Add SIL examples that include digital self continuity references
-- Add published article link after PostHaven publication
+- Extend article references as the public Fieldlight writing set grows
