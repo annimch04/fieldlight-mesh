@@ -40,6 +40,8 @@ See `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md` for the current publishing
 - `04_infrastructure/mesh/docs/TECH_INDEX.md`: Technical/operator documentation entrypoint
 - `04_infrastructure/mesh/docs/CANON_INDEX.md`: Canon/symbolic documentation entrypoint
 - `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md`: Mac/Octopus publishing boundary and export workflow
+- `04_infrastructure/mesh/docs/DIGITAL_SELF_ARCHITECTURE.md`: Digital self continuity contract across Fieldlight, Sanctum, local governance, and public authorship
+- `04_infrastructure/mesh/docs/CODEX_LOCAL_FIRST_GOVERNANCE.md`: Codex + local-first governance pattern for agent work inside governed project folders
 - `04_infrastructure/mesh/docs/NET_LAYER.md`: **Runnable** SIL-over-TCP sender/receiver (v1), driven by `config/lemur_route_schema.yml`
 - `04_infrastructure/mesh/docs/NODE_ID.md`: Canonical **mesh URI** vs GPG name (`mesh://fieldlight.anni.lemur`)
 - `04_infrastructure/mesh/docs/INGRESS_CONTRACT.md`: Runtime contract (receive → validate → respond; TCP return path)
