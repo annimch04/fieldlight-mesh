@@ -14,6 +14,8 @@ Architecture/spec narrative (mixed, not purely operator runbooks):
 - `../spec/fieldlight_mesh_high-level_execution_plan.md`
 - `../spec/fieldlight_mesh_phase3_overview.yml.md`
 - `PUBLISHING_LAYER.md` - Mac/Octopus publication boundary; Lemur remains source authority
+- `DIGITAL_SELF_ARCHITECTURE.md` - digital self as human-owned continuity layer and authored public/private projection boundary
+- `CODEX_LOCAL_FIRST_GOVERNANCE.md` - local project folders as authored interaction perimeters for agents
 
 Notes:
 
