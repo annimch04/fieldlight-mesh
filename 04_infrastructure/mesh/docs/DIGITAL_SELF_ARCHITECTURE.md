@@ -2,7 +2,7 @@
 
 Status: proposed
 
-Related article: Fieldlight | The Self on the Wire (`PostHaven URL to add after publication`)
+Related article: [Fieldlight | The Self on the Wire](https://sayitplain.posthaven.com/fieldlight-the-self-on-the-wire)
 
 ## Purpose
 
@@ -114,4 +114,4 @@ Public artifacts should be treated as authored projections, not as unrestricted 
 - Define `.fieldlight/agent-behavior.yml`
 - Add SIL fields for digital self continuity references
 - Add peer verification flow for continuity proofs
-- Link to the published PostHaven article when available
+- Extend article references as the public Fieldlight writing set grows
