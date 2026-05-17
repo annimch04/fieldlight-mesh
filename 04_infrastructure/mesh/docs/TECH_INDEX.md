@@ -13,6 +13,8 @@ Use this index for runnable/runtime materials. This is the technical path.
 - `CROSS_REPO_REFERENCES.md` - planned fieldlight-mesh/sanctum-zero reference map
 - `NDA_FLOW.md` - protocol-level NDA sharing, response, and execution-artifact tracking (`nda_request` / `nda_response` / `nda_execution`)
 - `PUBLISHING_LAYER.md` - Mac/Octopus publishing boundary for staged public artifacts
+- `DIGITAL_SELF_ARCHITECTURE.md` - digital self continuity contract across Fieldlight transport, Sanctum memory, local governance, and public authorship
+- `CODEX_LOCAL_FIRST_GOVERNANCE.md` - Codex/local-agent workflow for governed local project folders
 
 Code paths:
 
