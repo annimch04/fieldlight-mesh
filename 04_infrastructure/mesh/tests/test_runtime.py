@@ -49,6 +49,12 @@ def test_init_is_external_and_no_clobber(tmp_path: Path):
         initialize(home, node_id="mesh://other", node_name="other", port=7750)
 
 
+def test_desktop_app_module_imports():
+    from fieldlight_mesh.gui import MeshApp
+
+    assert MeshApp.__name__ == "MeshApp"
+
+
 def test_inbox_deduplicates_and_detects_conflict(tmp_path: Path):
     db = tmp_path / "inbox.sqlite3"
     msg = {"message_type": "message", "from": "mesh://a", "to": "mesh://b", "msg_id": "one", "body": "hi"}

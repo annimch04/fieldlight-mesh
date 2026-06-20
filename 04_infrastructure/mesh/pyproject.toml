@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fieldlight-mesh"
-version = "0.2.0"
+version = "0.3.0"
 description = "Local-first SIL messaging for Fieldlight nodes"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -16,9 +16,11 @@ dependencies = ["PyYAML>=6.0.1"]
 [project.optional-dependencies]
 discovery = ["zeroconf>=0.132.0"]
 dev = ["pytest>=8.0", "build>=1.2"]
+app = ["pyinstaller>=6.0"]
 
 [project.scripts]
 fieldlight-mesh = "fieldlight_mesh.cli:main"
+fieldlight-mesh-app = "fieldlight_mesh.gui:main"
 
 [tool.setuptools]
 packages = ["fieldlight_mesh"]
