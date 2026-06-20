@@ -28,6 +28,7 @@ def load_trusted_peers(path: Path | None) -> set[str] | None:
 class SILRequestHandler(socketserver.StreamRequestHandler):
     def handle(self) -> None:
         cfg: dict[str, Any] = self.server.cfg  # type: ignore[attr-defined]
+        self.connection.settimeout(float(cfg.get("socket_timeout", 10.0)))
         try:
             raw = read_frame(self.rfile)
             text = raw.decode("utf-8")
@@ -45,21 +46,32 @@ class SILRequestHandler(socketserver.StreamRequestHandler):
             write_frame(self.wfile, sil.sil_to_yaml_bytes(err))
             return
 
-        out = handle_inbound_sil(
-            msg,
-            routes=cfg["routes"],
-            node_id=cfg["node_id"],
-            node_short=cfg["node_short"],
-            trusted_peers=cfg.get("trusted_peers"),
-            routing_log_path=cfg["routing_log_path"],
-            audit_log_path=cfg.get("audit_log_path"),
-            log_writes=cfg.get("log_writes", True),
-        )
+        try:
+            out = handle_inbound_sil(
+                msg,
+                routes=cfg["routes"],
+                node_id=cfg["node_id"],
+                node_short=cfg["node_short"],
+                trusted_peers=cfg.get("trusted_peers"),
+                routing_log_path=cfg["routing_log_path"],
+                audit_log_path=cfg.get("audit_log_path"),
+                inbox_path=cfg.get("inbox_path"),
+                log_writes=cfg.get("log_writes", True),
+            )
+        except Exception:
+            out = {
+                "message_type": "response", "from": cfg["node_id"],
+                "to": str(msg.get("from", "mesh://unknown")),
+                "in_reply_to": sil.ensure_msg_id(msg), "status": 500,
+                "intent": "internal_error",
+            }
+            out["msg_id"] = sil.ensure_msg_id(out)
         write_frame(self.wfile, sil.sil_to_yaml_bytes(out))
 
 
 class SILMeshServer(socketserver.ThreadingTCPServer):
     allow_reuse_address = True
+    daemon_threads = True
 
     def __init__(
         self,

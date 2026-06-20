@@ -7,11 +7,12 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 
 import yaml
 
-from fieldlight_mesh.lan_mdns import LANAdvertisement
+if TYPE_CHECKING:
+    from fieldlight_mesh.lan_mdns import LANAdvertisement
 
 REGISTRY_VERSION = 1
 
@@ -203,7 +204,7 @@ def coalesce_registry_entries(entries: list[dict[str, Any]]) -> list[dict[str, A
 
 def merge_registry(
     existing: dict[str, Any],
-    new_lan_rows: list[LANAdvertisement] | None = None,
+    new_lan_rows: list["LANAdvertisement"] | None = None,
     *,
     libp2p_entries: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:

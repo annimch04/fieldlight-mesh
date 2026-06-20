@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -52,18 +51,11 @@ def trust_allows_sender(
     t = (trust_required or "").strip().lower()
     if t in ("any", ""):
         return True
-    if t == "peer":
+    if t in ("peer", "proxy", "ghost"):
         if not trusted_peers:
-            return True  # dev default: accept if no ACL file
+            return False
         return sender in trusted_peers
-    if t == "proxy":
-        if not trusted_peers:
-            return True
-        return sender in trusted_peers
-    if t == "ghost":
-        # Echo-only role: still accept for echo message_type handling
-        return True
-    return True
+    return False
 
 
 def auth_ok(route: Mapping[str, Any], msg: Mapping[str, Any]) -> tuple[bool, str]:
@@ -74,15 +66,8 @@ def auth_ok(route: Mapping[str, Any], msg: Mapping[str, Any]) -> tuple[bool, str
     if auth == AUTH_OPTIONAL:
         return True, "auth optional"
     if auth == AUTH_GPG_SIG:
-        # Stub: accept gpg_signature armored block OR gpg --verify path later
-        if msg.get("gpg_signature"):
-            return True, "gpg_signature present"
-        if "BEGIN PGP SIGNATURE" in str(msg.get("body", "")):
-            return True, "inline pgp signature"
-        if os.environ.get("FIELDLIGHT_INSECURE_SKIP_GPG") == "1":
-            return True, "FIELDLIGHT_INSECURE_SKIP_GPG=1"
-        return False, "gpg_sig required (stub: set gpg_signature or FIELDLIGHT_INSECURE_SKIP_GPG=1)"
-    return True, "unknown auth defaults ok"
+        return False, "gpg_sig verification is not implemented; route denied"
+    return False, f"unknown auth mode denied: {auth}"
 
 
 def ttl_exceeded(route: Mapping[str, Any], msg: Mapping[str, Any]) -> bool:

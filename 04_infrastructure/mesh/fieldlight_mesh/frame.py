@@ -23,13 +23,23 @@ def write_frame(stream: BinaryIO, body: bytes) -> None:
 
 
 def read_frame(stream: BinaryIO) -> bytes:
-    header = stream.read(4)
-    if len(header) < 4:
-        raise EOFError("short read on length prefix")
+    header = _read_exact(stream, 4, "length prefix")
     (n,) = struct.unpack(">I", header)
+    if n == 0:
+        raise ValueError("empty frames are not allowed")
     if n > _MAX_PAYLOAD:
         raise ValueError(f"invalid frame length: {n}")
-    data = stream.read(n)
-    if len(data) < n:
-        raise EOFError("short read on payload")
-    return data
+    return _read_exact(stream, n, "payload")
+
+
+def _read_exact(stream: BinaryIO, size: int, label: str) -> bytes:
+    chunks: list[bytes] = []
+    remaining = size
+    while remaining:
+        chunk = stream.read(remaining)
+        if not chunk:
+            received = size - remaining
+            raise EOFError(f"short read on {label}: {received}/{size} bytes")
+        chunks.append(chunk)
+        remaining -= len(chunk)
+    return b"".join(chunks)

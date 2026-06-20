@@ -17,7 +17,7 @@ This repository includes:
 
 **Status:** Active — Initial push includes infrastructure and onboarding layer  
 **Lead Author:** Anni McHenry (`@fieldlight.root`)  
-**Node:** Lemur (System76)  
+**Nodes:** Lemur (System76, canonical source) and Astra (Mac mesh runtime)
 
 ---
 
@@ -25,7 +25,7 @@ This repository includes:
 
 Lemur remains the Fieldlight source-of-truth node.
 
-The Mac is the publishing layer for Codex sessions, public drafts, documentation updates, and outward-facing artifacts.
+The Mac is the publishing layer for Codex sessions and also hosts the independently identified Astra mesh node (`mesh://fieldlight.anni.astra`). Astra may run and test packaged mesh transport without silently replacing Lemur as canonical source authority.
 
 Octopus lives on the Mac as a publishing-layer witness. It may stage, package, and track artifacts, but it does not replace Lemur, Kestrel, Ghost, or source verification.
 
@@ -40,6 +40,7 @@ See `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md` for the current publishing
 - `04_infrastructure/mesh/docs/TECH_INDEX.md`: Technical/operator documentation entrypoint
 - `04_infrastructure/mesh/docs/CANON_INDEX.md`: Canon/symbolic documentation entrypoint
 - `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md`: Mac/Octopus publishing boundary and export workflow
+- `04_infrastructure/mesh/docs/MAC_ALPHA_RUNBOOK.md`: Astra + Charlie install and bidirectional LAN acceptance test
 - `04_infrastructure/mesh/docs/DIGITAL_SELF_ARCHITECTURE.md`: Digital self continuity contract across Fieldlight, Sanctum, local governance, and public authorship
 - `04_infrastructure/mesh/docs/CODEX_LOCAL_FIRST_GOVERNANCE.md`: Codex + local-first governance pattern for agent work inside governed project folders
 - `04_infrastructure/mesh/docs/NET_LAYER.md`: **Runnable** SIL-over-TCP sender/receiver (v1), driven by `config/lemur_route_schema.yml`

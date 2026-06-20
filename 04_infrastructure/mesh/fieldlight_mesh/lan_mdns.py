@@ -188,6 +188,8 @@ def _non_loopback_ips() -> list[str]:
                 ips.append(ip)
     except OSError:
         pass
+    # SIL v1 listens on IPv4 by default; prefer a reachable IPv4 advertisement.
+    ips.sort(key=lambda ip: 0 if ":" not in ip else 1)
     # de-dupe preserving order
     out: list[str] = []
     for ip in ips:

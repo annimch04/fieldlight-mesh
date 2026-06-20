@@ -3,3 +3,6 @@ config/discovered_peers.yml
 .venv/
 __pycache__/
 *.py[cod]
+build/
+dist/
+*.egg-info/

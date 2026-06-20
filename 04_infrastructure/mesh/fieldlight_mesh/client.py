@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import socket
 
@@ -24,10 +24,31 @@ def send_sil_file(
 ) -> dict[str, Any]:
     text = payload_path.read_text(encoding="utf-8")
     msg = sil.load_sil_yaml(text)
+    return send_sil_message(
+        host=host, port=port, msg=msg, node_short=node_short,
+        routing_log_path=routing_log_path, audit_log_path=audit_log_path,
+        log_writes=log_writes,
+    )
+
+
+def send_sil_message(
+    *,
+    host: str,
+    port: int,
+    msg: Mapping[str, Any],
+    node_short: str,
+    routing_log_path: Path | None,
+    audit_log_path: Path | None,
+    log_writes: bool,
+    timeout: float = 10.0,
+) -> dict[str, Any]:
+    msg = dict(msg)
     sil.validate_inbound_sil(msg)
+    mid = sil.ensure_msg_id(msg)
     body = sil.sil_to_yaml_bytes(msg)
 
-    with socket.create_connection((host, port), timeout=30) as sock:
+    with socket.create_connection((host, port), timeout=timeout) as sock:
+        sock.settimeout(timeout)
         wfile = sock.makefile("wb")
         rfile = sock.makefile("rb")
         write_frame(wfile, body)
@@ -36,9 +57,15 @@ def send_sil_file(
         rfile.close()
 
     resp = sil.load_sil_yaml(raw.decode("utf-8"))
+    sil.validate_inbound_sil(resp)
+    if str(resp.get("in_reply_to")) != mid:
+        raise ValueError("response does not match request msg_id")
+    if str(resp.get("from")) != str(msg["to"]):
+        raise ValueError("response sender does not match request destination")
+    if str(resp.get("to")) != str(msg["from"]):
+        raise ValueError("response destination does not match request sender")
 
     if log_writes and routing_log_path:
-        mid = sil.ensure_msg_id(msg)
         sys_id = make_sys_id(node_short)
         try:
             append_routing_log(

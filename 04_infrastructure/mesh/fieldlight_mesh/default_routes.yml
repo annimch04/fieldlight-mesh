@@ -1,0 +1,14 @@
+routes:
+  ping:
+    trust_required: any
+    ttl: 1
+    auth: optional
+  message:
+    trust_required: peer
+    ttl: 2
+    auth: optional
+  response:
+    trust_required: peer
+    ttl: 2
+    auth: optional
+

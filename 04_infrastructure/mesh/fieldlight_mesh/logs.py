@@ -3,11 +3,25 @@
 from __future__ import annotations
 
 import sys
+import os
+import tempfile
+import threading
+from functools import wraps
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import yaml
+
+_LOG_LOCK = threading.RLock()
+
+
+def _synchronized(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        with _LOG_LOCK:
+            return func(*args, **kwargs)
+    return wrapped
 
 
 def _utc_ts() -> str:
@@ -25,10 +39,20 @@ def _ensure_file(path: Path, starter: dict[str, Any]) -> dict[str, Any]:
 
 
 def _write_file(path: Path, data: dict[str, Any]) -> None:
-    with open(path, "w", encoding="utf-8") as f:
-        yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=str(path.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_name, path)
+    finally:
+        if os.path.exists(tmp_name):
+            os.unlink(tmp_name)
 
 
+@_synchronized
 def append_routing_log(
     path: Path,
     *,
@@ -79,6 +103,7 @@ def append_routing_log(
     _write_file(path, data)
 
 
+@_synchronized
 def append_audit_log(
     path: Path,
     *,

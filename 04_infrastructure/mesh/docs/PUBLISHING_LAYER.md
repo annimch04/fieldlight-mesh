@@ -6,9 +6,11 @@ This document defines the Mac / Octopus publishing boundary for Fieldlight.
 
 Lemur remains the Fieldlight source-of-truth node.
 
-The Mac is the publishing layer.
+The Mac is the publishing layer and the host of Astra, an independently identified mesh runtime node.
 
 This distinction keeps canonical state, local-first memory, and consent-gated execution separate from the outward-facing process of drafting, packaging, and publishing artifacts.
+
+Astra (`mesh://fieldlight.anni.astra`) may run packaged mesh transport, maintain its own peer trust and inbox state, and participate in explicit tests. Astra does not inherit Lemur's identity or silently become Fieldlight's canonical source node.
 
 ## Lemur Source Authority
 

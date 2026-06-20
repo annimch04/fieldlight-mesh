@@ -7,6 +7,7 @@ from typing import Any
 from . import routing as R
 from . import sil
 from .logs import append_audit_log, append_routing_log, log_nonfatal_warning, make_sys_id
+from .inbox import record_message
 
 
 def _response(
@@ -44,13 +45,20 @@ def handle_inbound_sil(
     routing_log_path: Any,
     audit_log_path: Any | None,
     log_writes: bool,
+    inbox_path: Any | None = None,
 ) -> dict[str, Any]:
     sil.validate_inbound_sil(msg)
     mt = str(msg["message_type"])
     sender = str(msg["from"])
     mid = sil.ensure_msg_id(msg)
 
-    route = R.route_for_message_type(routes, mt)
+    try:
+        route = R.route_for_message_type(routes, mt)
+    except ValueError:
+        return _response(
+            node_id=node_id, to_peer=sender, in_reply_to=mid,
+            status=501, intent="unsupported_message_type",
+        )
     sys_id = make_sys_id(node_short)
 
     def log_route(status: str, trust_level: str, auth_note: str | None = None) -> None:
@@ -130,6 +138,29 @@ def handle_inbound_sil(
     # Delivered
     trust_level = tr
     log_route("delivered", trust_level, reason if ok else None)
+
+    if mt == "message":
+        if inbox_path is None:
+            return _response(
+                node_id=node_id, to_peer=sender, in_reply_to=mid,
+                status=503, intent="inbox_unavailable",
+            )
+        try:
+            stored = record_message(inbox_path, msg)
+        except ValueError as exc:
+            return _response(
+                node_id=node_id, to_peer=sender, in_reply_to=mid,
+                status=409, intent="message_id_conflict", extra={"detail": str(exc)},
+            )
+        except Exception:
+            return _response(
+                node_id=node_id, to_peer=sender, in_reply_to=mid,
+                status=507, intent="message_not_stored",
+            )
+        return _response(
+            node_id=node_id, to_peer=sender, in_reply_to=mid,
+            status=202, intent="message_received", extra={"storage": stored},
+        )
 
     if mt == "ping":
         return _response(
