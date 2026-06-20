@@ -64,7 +64,7 @@ def test_two_node_message_is_stored_before_ack(tmp_path: Path):
     astra = tmp_path / "astra"
     initialize(astra, node_id="mesh://fieldlight.anni.astra", node_name="astra", port=7750)
     p = paths(astra)
-    p["trusted"].write_text("peers:\n  - mesh://fieldlight.charlie.mac\n", encoding="utf-8")
+    p["trusted"].write_text("peers:\n  - mesh://fieldlight.peer.test\n", encoding="utf-8")
     from fieldlight_mesh.routing import load_route_schema
 
     cfg = {
@@ -84,9 +84,9 @@ def test_two_node_message_is_stored_before_ack(tmp_path: Path):
     try:
         response = send_sil_message(
             host="127.0.0.1", port=server.server_address[1],
-            msg={"message_type": "message", "from": "mesh://fieldlight.charlie.mac",
+            msg={"message_type": "message", "from": "mesh://fieldlight.peer.test",
                  "to": "mesh://fieldlight.anni.astra", "body": "Hello Astra"},
-            node_short="CHARLIE", routing_log_path=None, audit_log_path=None, log_writes=False,
+            node_short="PEER", routing_log_path=None, audit_log_path=None, log_writes=False,
         )
     finally:
         server.shutdown()

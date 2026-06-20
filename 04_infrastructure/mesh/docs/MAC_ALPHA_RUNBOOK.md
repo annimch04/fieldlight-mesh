@@ -1,4 +1,4 @@
-# Astra + Charlie Mac Alpha
+# Astra + Peer Mac Alpha
 
 This field test proves bidirectional, durable messaging over a trusted local network.
 
@@ -28,12 +28,12 @@ Initialize Astra:
 .venv/bin/fieldlight-mesh doctor
 ```
 
-Charlie initializes a distinct identity:
+The second operator initializes a distinct test identity:
 
 ```bash
 .venv/bin/fieldlight-mesh init \
-  --name charlie \
-  --node-id mesh://fieldlight.charlie.mac
+  --name peer \
+  --node-id mesh://fieldlight.peer.test
 .venv/bin/fieldlight-mesh doctor
 ```
 
@@ -71,12 +71,12 @@ ipconfig getifaddr en0
 On Astra:
 
 ```bash
-.venv/bin/fieldlight-mesh peers add mesh://fieldlight.charlie.mac --host CHARLIE_IPV4
-.venv/bin/fieldlight-mesh peers trust mesh://fieldlight.charlie.mac
+.venv/bin/fieldlight-mesh peers add mesh://fieldlight.peer.test --host PEER_IPV4
+.venv/bin/fieldlight-mesh peers trust mesh://fieldlight.peer.test
 .venv/bin/fieldlight-mesh node --advertise
 ```
 
-On Charlie:
+On the peer Mac:
 
 ```bash
 .venv/bin/fieldlight-mesh peers add mesh://fieldlight.anni.astra --host ASTRA_IPV4
@@ -97,20 +97,20 @@ Discovery never authorizes a peer. Keep the explicit `peers trust` step.
 
 ## Bidirectional Acceptance Test
 
-Charlie sends:
+The peer sends:
 
 ```bash
-.venv/bin/fieldlight-mesh send-message mesh://fieldlight.anni.astra "Charlie to Astra: field test one"
+.venv/bin/fieldlight-mesh send-message mesh://fieldlight.anni.astra "Peer to Astra: field test one"
 ```
 
 Astra verifies and replies:
 
 ```bash
 .venv/bin/fieldlight-mesh inbox
-.venv/bin/fieldlight-mesh send-message mesh://fieldlight.charlie.mac "Astra to Charlie: received"
+.venv/bin/fieldlight-mesh send-message mesh://fieldlight.peer.test "Astra to peer: received"
 ```
 
-Charlie verifies:
+The peer verifies:
 
 ```bash
 .venv/bin/fieldlight-mesh inbox
