@@ -42,6 +42,8 @@ See `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md` for the current publishing
 - `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md`: Mac/Octopus publishing boundary and export workflow
 - `04_infrastructure/mesh/docs/MAC_ALPHA_RUNBOOK.md`: Astra + peer install and bidirectional LAN acceptance test
 - `04_infrastructure/mesh/docs/PEER_INSTALL_MACOS.md`: drag-and-drop macOS app installation for a peer
+- `04_infrastructure/mesh/docs/IDENTITY_AND_SIGNATURES.md`: Ed25519 local identity and signed object verification
+- `04_infrastructure/mesh/docs/TOWN_SQUARE.md`: signed public wall alpha for append-only mesh posts
 - `04_infrastructure/mesh/docs/DIGITAL_SELF_ARCHITECTURE.md`: Digital self continuity contract across Fieldlight, Sanctum, local governance, and public authorship
 - `04_infrastructure/mesh/docs/CODEX_LOCAL_FIRST_GOVERNANCE.md`: Codex + local-first governance pattern for agent work inside governed project folders
 - `04_infrastructure/mesh/docs/NET_LAYER.md`: **Runnable** SIL-over-TCP sender/receiver (v1), driven by `config/lemur_route_schema.yml`

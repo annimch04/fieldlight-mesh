@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fieldlight-mesh"
-version = "0.3.0"
+version = "0.4.0"
 description = "Local-first SIL messaging for Fieldlight nodes"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "LicenseRef-Fieldlight-Custom-1.0"
 license-files = ["LICENSE.md"]
 authors = [{ name = "Anni McHenry" }]
-dependencies = ["PyYAML>=6.0.1"]
+dependencies = ["PyYAML>=6.0.1", "cryptography>=42.0"]
 
 [project.optional-dependencies]
 discovery = ["zeroconf>=0.132.0"]

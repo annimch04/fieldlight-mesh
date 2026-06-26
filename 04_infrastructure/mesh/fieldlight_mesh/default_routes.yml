@@ -7,8 +7,11 @@ routes:
     trust_required: peer
     ttl: 2
     auth: optional
+  town_square_bundle:
+    trust_required: peer
+    ttl: 2
+    auth: optional
   response:
     trust_required: peer
     ttl: 2
     auth: optional
-

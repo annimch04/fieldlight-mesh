@@ -8,6 +8,7 @@ from . import routing as R
 from . import sil
 from .logs import append_audit_log, append_routing_log, log_nonfatal_warning, make_sys_id
 from .inbox import record_message
+from .town_square import import_bundle
 
 
 def _response(
@@ -46,6 +47,7 @@ def handle_inbound_sil(
     audit_log_path: Any | None,
     log_writes: bool,
     inbox_path: Any | None = None,
+    town_square_path: Any | None = None,
 ) -> dict[str, Any]:
     sil.validate_inbound_sil(msg)
     mt = str(msg["message_type"])
@@ -160,6 +162,31 @@ def handle_inbound_sil(
         return _response(
             node_id=node_id, to_peer=sender, in_reply_to=mid,
             status=202, intent="message_received", extra={"storage": stored},
+        )
+
+    if mt == "town_square_bundle":
+        if town_square_path is None:
+            return _response(
+                node_id=node_id, to_peer=sender, in_reply_to=mid,
+                status=503, intent="town_square_unavailable",
+            )
+        bundle = msg.get("bundle")
+        if not isinstance(bundle, dict):
+            return _response(
+                node_id=node_id, to_peer=sender, in_reply_to=mid,
+                status=422, intent="town_square_invalid_bundle",
+                extra={"detail": "town_square_bundle requires bundle mapping"},
+            )
+        try:
+            summary = import_bundle(town_square_path, bundle)
+        except ValueError as exc:
+            return _response(
+                node_id=node_id, to_peer=sender, in_reply_to=mid,
+                status=422, intent="town_square_bundle_rejected", extra={"detail": str(exc)},
+            )
+        return _response(
+            node_id=node_id, to_peer=sender, in_reply_to=mid,
+            status=202, intent="town_square_bundle_received", extra=summary,
         )
 
     if mt == "ping":

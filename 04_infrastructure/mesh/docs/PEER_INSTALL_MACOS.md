@@ -5,13 +5,13 @@ Fieldlight Mesh is distributed as a self-contained macOS application. A peer doe
 ## Current Build
 
 - Apple Silicon (`arm64`)
-- Fieldlight Mesh 0.3.0
+- Fieldlight Mesh 0.4.0
 - Ad-hoc signed for direct, in-person testing
 - Not Apple-notarized
 
 ## Install
 
-1. Open `Fieldlight-Mesh-0.3.0-macOS-arm64.dmg`.
+1. Open `Fieldlight-Mesh-0.4.0-macOS-arm64.dmg`.
 2. Drag **Fieldlight Mesh** into **Applications**.
 3. On first launch, Control-click the app, choose **Open**, then confirm **Open** if macOS displays an unidentified-developer warning.
 4. Allow Local Network and incoming-network access when macOS asks.
@@ -47,6 +47,6 @@ Discovery never grants trust automatically.
 
 ## Security Boundary
 
-Version 0.3.0 is a trusted-LAN alpha. Messages use plaintext TCP and identities are not yet cryptographically verified. Do not expose port 7750 to the public internet or send sensitive material.
+Version 0.4.0 is a trusted-LAN alpha. Town Square posts are cryptographically signed, but transport still uses plaintext TCP. Do not expose port 7750 to the public internet or send sensitive material.
 
 The next protocol release will add signed identities and scoped delegation before public town-square or vehicle-agent use.

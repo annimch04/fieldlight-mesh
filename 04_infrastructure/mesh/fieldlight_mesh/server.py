@@ -56,6 +56,7 @@ class SILRequestHandler(socketserver.StreamRequestHandler):
                 routing_log_path=cfg["routing_log_path"],
                 audit_log_path=cfg.get("audit_log_path"),
                 inbox_path=cfg.get("inbox_path"),
+                town_square_path=cfg.get("town_square_path"),
                 log_writes=cfg.get("log_writes", True),
             )
         except Exception:

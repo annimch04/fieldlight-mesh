@@ -10,11 +10,13 @@ from tkinter import messagebox, ttk
 from typing import Any, Callable
 
 from .client import send_sil_message
+from .identity import identity_exists, initialize_identity
 from .inbox import list_messages
 from .peer_registry import load_registry, merge_registry, resolve_sil_address
 from .routing import load_route_schema
 from .server import SILMeshServer, load_trusted_peers
-from .state import default_home, default_node_id, initialize, load_config, load_yaml, paths, write_yaml
+from .state import default_home, default_node_id, ensure_default_routes, initialize, load_config, load_yaml, paths, write_yaml
+from .town_square import create_post, list_objects, verify_store
 
 
 class MeshApp(tk.Tk):
@@ -100,12 +102,15 @@ class MeshApp(tk.Tk):
         self.notebook.pack(fill="both", expand=True, padx=18, pady=(0, 18))
         self.home_tab = ttk.Frame(self.notebook, padding=20)
         self.messages_tab = ttk.Frame(self.notebook, padding=20)
+        self.town_tab = ttk.Frame(self.notebook, padding=20)
         self.peers_tab = ttk.Frame(self.notebook, padding=20)
         self.notebook.add(self.home_tab, text="Node")
         self.notebook.add(self.messages_tab, text="Messages")
+        self.notebook.add(self.town_tab, text="Town Square")
         self.notebook.add(self.peers_tab, text="Peers")
         self._build_node_tab(cfg)
         self._build_messages_tab()
+        self._build_town_tab()
         self._build_peers_tab()
 
     def _build_node_tab(self, cfg: dict[str, Any]) -> None:
@@ -132,6 +137,7 @@ class MeshApp(tk.Tk):
 
     def _server_config(self, cfg: dict[str, Any]) -> dict[str, Any]:
         p = paths(self.home)
+        ensure_default_routes(self.home)
         return {
             "routes": load_route_schema(p["routes"]),
             "node_id": cfg["node_id"],
@@ -140,6 +146,7 @@ class MeshApp(tk.Tk):
             "routing_log_path": p["routing_log"],
             "audit_log_path": p["audit_log"],
             "inbox_path": p["inbox"],
+            "town_square_path": p["town_square"],
             "log_writes": True,
             "socket_timeout": 10.0,
         }
@@ -257,6 +264,72 @@ class MeshApp(tk.Tk):
         for row in list_messages(paths(self.home)["inbox"], limit=100):
             msg = row["message"]
             self.inbox_tree.insert("", "end", values=(row["received_at"], row["from"], msg.get("body", "")))
+
+    def _build_town_tab(self) -> None:
+        ttk.Label(self.town_tab, text="Town Square", style="Heading.TLabel").pack(anchor="w")
+        ttk.Label(
+            self.town_tab,
+            text="Public-readable, signed local feed. Sync uses trusted peers; no silent deletion.",
+            wraplength=720,
+        ).pack(anchor="w", pady=(4, 14))
+        compose = ttk.LabelFrame(self.town_tab, text="Signed Public Post", padding=14)
+        compose.pack(fill="x")
+        self.town_body = tk.Text(compose, height=4, wrap="word")
+        self.town_body.pack(fill="x")
+        actions = ttk.Frame(compose)
+        actions.pack(fill="x", pady=(10, 0))
+        ttk.Button(actions, text="Post", command=self._town_post).pack(side="right")
+        ttk.Button(actions, text="Verify Feed", command=self._town_verify).pack(side="left")
+        self.town_status = tk.StringVar()
+        ttk.Label(compose, textvariable=self.town_status).pack(anchor="w", pady=(8, 0))
+        header = ttk.Frame(self.town_tab)
+        header.pack(fill="x", pady=(20, 6))
+        ttk.Label(header, text="Local Feed", style="Heading.TLabel").pack(side="left")
+        ttk.Button(header, text="Refresh", command=self._refresh_town).pack(side="right")
+        self.town_tree = ttk.Treeview(self.town_tab, columns=("time", "author", "body"), show="headings", height=10)
+        self.town_tree.heading("time", text="Created")
+        self.town_tree.heading("author", text="Author")
+        self.town_tree.heading("body", text="Post")
+        self.town_tree.column("time", width=150)
+        self.town_tree.column("author", width=240)
+        self.town_tree.column("body", width=360)
+        self.town_tree.pack(fill="both", expand=True)
+        self._refresh_town()
+
+    def _town_post(self) -> None:
+        text = self.town_body.get("1.0", "end").strip()
+        if not text:
+            messagebox.showerror("Post empty", "Write a post before signing it.")
+            return
+        cfg = load_config(self.home)
+        try:
+            if not identity_exists(self.home):
+                initialize_identity(self.home, node_id=str(cfg["node_id"]), label=str(cfg.get("node_name", "node")))
+            obj = create_post(paths(self.home)["town_square"], self.home, text)
+        except Exception as exc:
+            messagebox.showerror("Post failed", str(exc))
+            return
+        self.town_body.delete("1.0", "end")
+        self.town_status.set(f"Posted {obj['object_id']}")
+        self._refresh_town()
+
+    def _town_verify(self) -> None:
+        try:
+            summary = verify_store(paths(self.home)["town_square"])
+        except Exception as exc:
+            self.town_status.set(f"Verify failed: {exc}")
+            return
+        self.town_status.set(f"Verified {summary['verified']} object(s); failed {summary['failed']}.")
+
+    def _refresh_town(self) -> None:
+        if not hasattr(self, "town_tree"):
+            return
+        for item in self.town_tree.get_children():
+            self.town_tree.delete(item)
+        for obj in list_objects(paths(self.home)["town_square"], limit=100):
+            content = obj.get("content", {})
+            body = content.get("body", "") if isinstance(content, dict) else ""
+            self.town_tree.insert("", "end", values=(obj.get("created_at"), obj.get("author"), body))
 
     def _build_peers_tab(self) -> None:
         ttk.Label(self.peers_tab, text="Trusted Peers", style="Heading.TLabel").pack(anchor="w")

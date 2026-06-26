@@ -7,11 +7,13 @@ from pathlib import Path
 import pytest
 
 from fieldlight_mesh.client import send_sil_message
+from fieldlight_mesh.identity import initialize_identity
 from fieldlight_mesh.frame import read_frame, write_frame
 from fieldlight_mesh.inbox import list_messages, record_message
 from fieldlight_mesh.routing import trust_allows_sender
 from fieldlight_mesh.server import SILMeshServer, load_trusted_peers
 from fieldlight_mesh.state import initialize, load_config, paths
+from fieldlight_mesh.town_square import create_post, export_bundle, import_bundle, list_objects, verify_object, verify_store
 
 
 class OneByteReader(io.BytesIO):
@@ -81,6 +83,7 @@ def test_two_node_message_is_stored_before_ack(tmp_path: Path):
         "routing_log_path": p["routing_log"],
         "audit_log_path": p["audit_log"],
         "inbox_path": p["inbox"],
+        "town_square_path": p["town_square"],
         "log_writes": False,
         "socket_timeout": 2,
     }
@@ -101,3 +104,76 @@ def test_two_node_message_is_stored_before_ack(tmp_path: Path):
     assert response["status"] == 202
     assert response["intent"] == "message_received"
     assert list_messages(p["inbox"])[0]["message"]["body"] == "Hello Astra"
+
+
+def test_town_square_post_is_signed_and_importable(tmp_path: Path):
+    home = tmp_path / "node"
+    initialize(home, node_id="mesh://fieldlight.node.alpha", node_name="alpha", port=7750)
+    initialize_identity(home, node_id="mesh://fieldlight.node.alpha", label="alpha")
+    p = paths(home)
+    obj = create_post(p["town_square"], home, "hello public square")
+    ok, reason = verify_object(obj)
+    assert ok, reason
+    assert obj["object_type"] == "town_square.post"
+    bundle = export_bundle(p["town_square"])
+    other = tmp_path / "other.sqlite3"
+    assert import_bundle(other, bundle) == {"stored": 1, "duplicates": 0}
+    assert import_bundle(other, bundle) == {"stored": 0, "duplicates": 1}
+    assert verify_store(other) == {"verified": 1, "failed": 0}
+
+
+def test_town_square_rejects_tampered_post(tmp_path: Path):
+    home = tmp_path / "node"
+    initialize(home, node_id="mesh://fieldlight.node.alpha", node_name="alpha", port=7750)
+    initialize_identity(home, node_id="mesh://fieldlight.node.alpha", label="alpha")
+    p = paths(home)
+    obj = create_post(p["town_square"], home, "original")
+    obj["content"]["body"] = "tampered"
+    ok, reason = verify_object(obj)
+    assert not ok
+    assert "object_id" in reason or "signature" in reason
+
+
+def test_two_node_town_square_bundle_sync(tmp_path: Path):
+    sender = tmp_path / "sender"
+    receiver = tmp_path / "receiver"
+    initialize(sender, node_id="mesh://fieldlight.node.sender", node_name="sender", port=7750)
+    initialize(receiver, node_id="mesh://fieldlight.node.receiver", node_name="receiver", port=7750)
+    initialize_identity(sender, node_id="mesh://fieldlight.node.sender", label="sender")
+    sender_paths = paths(sender)
+    receiver_paths = paths(receiver)
+    receiver_paths["trusted"].write_text("peers:\n  - mesh://fieldlight.node.sender\n", encoding="utf-8")
+    create_post(sender_paths["town_square"], sender, "replicate me")
+
+    from fieldlight_mesh.routing import load_route_schema
+
+    cfg = {
+        "routes": load_route_schema(receiver_paths["routes"]),
+        "node_id": "mesh://fieldlight.node.receiver",
+        "node_short": "RECEIVER",
+        "trusted_peers": load_trusted_peers(receiver_paths["trusted"]),
+        "routing_log_path": receiver_paths["routing_log"],
+        "audit_log_path": receiver_paths["audit_log"],
+        "inbox_path": receiver_paths["inbox"],
+        "town_square_path": receiver_paths["town_square"],
+        "log_writes": False,
+        "socket_timeout": 2,
+    }
+    server = SILMeshServer(("127.0.0.1", 0), cfg)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        response = send_sil_message(
+            host="127.0.0.1", port=server.server_address[1],
+            msg={"message_type": "town_square_bundle", "from": "mesh://fieldlight.node.sender",
+                 "to": "mesh://fieldlight.node.receiver", "bundle": export_bundle(sender_paths["town_square"])},
+            node_short="SENDER", routing_log_path=None, audit_log_path=None, log_writes=False,
+        )
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+    assert response["status"] == 202
+    assert response["intent"] == "town_square_bundle_received"
+    assert response["stored"] == 1
+    assert list_objects(receiver_paths["town_square"])[0]["content"]["body"] == "replicate me"

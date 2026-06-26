@@ -34,7 +34,11 @@ def paths(home: Path) -> dict[str, Path]:
         "routes": home / "routes.yml",
         "trusted": home / "trusted_peers.yml",
         "registry": home / "peers.yml",
+        "identity_dir": home / "identity",
+        "identity_private_key": home / "identity" / "ed25519_private.pem",
+        "identity_public": home / "identity" / "public_identity.yml",
         "inbox": home / "inbox.sqlite3",
+        "town_square": home / "town_square.sqlite3",
         "routing_log": home / "logs" / "routing.yml",
         "audit_log": home / "logs" / "audit.yml",
     }
@@ -76,6 +80,29 @@ def initialize(home: Path, *, node_id: str, node_name: str, port: int, force: bo
     p["routes"].chmod(0o600)
     write_yaml(p["trusted"], {"peers": []})
     write_yaml(p["registry"], {"version": 1, "entries": []})
+
+
+def ensure_default_routes(home: Path) -> bool:
+    """Merge packaged route defaults into an existing state directory.
+
+    Returns True when the route file changed. Existing local route definitions win.
+    """
+    p = paths(home)
+    default_routes = yaml.safe_load(
+        resources.files("fieldlight_mesh").joinpath("default_routes.yml").read_text(encoding="utf-8")
+    )
+    current = load_yaml(p["routes"], {"routes": {}})
+    if not isinstance(current, dict):
+        raise ValueError("routes.yml must be a mapping")
+    current_routes = current.setdefault("routes", {})
+    changed = False
+    for name, route in default_routes.get("routes", {}).items():
+        if name not in current_routes:
+            current_routes[name] = route
+            changed = True
+    if changed:
+        write_yaml(p["routes"], current)
+    return changed
 
 
 def load_config(home: Path) -> dict[str, Any]:

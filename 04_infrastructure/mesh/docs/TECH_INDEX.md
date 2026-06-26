@@ -6,6 +6,8 @@ Use this index for runnable/runtime materials. This is the technical path.
 
 - `NET_LAYER.md` - runbook for SIL over TCP
 - `INGRESS_CONTRACT.md` - ingress/validation/dispatch contract
+- `IDENTITY_AND_SIGNATURES.md` - Ed25519 local identity, signed objects, and verification rules
+- `TOWN_SQUARE.md` - signed public wall alpha and trusted-peer bundle sync
 - `NODE_ID.md` - canonical mesh IDs and naming rules
 - `LIVE_TEST_PEEJ.md` - external test checklist
 - `TEST_STATUS.md` - current execution status and blockers
