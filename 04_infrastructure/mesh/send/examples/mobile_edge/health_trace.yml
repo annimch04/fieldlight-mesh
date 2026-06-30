@@ -1,0 +1,22 @@
+# Mobile Edge Node health event carried over existing SIL `message` route.
+message_type: message
+from: mesh://fieldlight.anni.supra
+to: mesh://fieldlight.anni.lemur
+intent: mobile_edge_health
+msg_id: supra-health-demo-001
+
+event_type: mobile_edge.health
+health:
+  node_id: mesh://fieldlight.anni.supra
+  created_at: 2026-06-30T12:00:00-05:00
+  recording: true
+  gps: true
+  storage:
+    status: ok
+    free_gb: 512
+  sync:
+    status: ready
+    pending_events: 4
+  power:
+    source: auxiliary_battery
+    status: ok

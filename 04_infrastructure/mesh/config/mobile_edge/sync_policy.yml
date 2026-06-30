@@ -1,0 +1,35 @@
+# Mobile Edge Node sync policy for Phase 1.
+version: 1
+policy_id: fieldlight.mobile_edge.sync_policy.v1
+node_id: mesh://fieldlight.anni.supra
+
+trusted_sync_targets:
+  - mesh://fieldlight.anni.lemur
+  - mesh://fieldlight.anni.home
+
+defaults:
+  raw_media: local_only
+  exact_location: review_required
+  approximate_location: sync_allowed_to_trusted_targets
+  manual_bookmarks: sync_allowed_to_trusted_targets
+  health_status: sync_allowed_to_trusted_targets
+  ai_summaries: review_required
+  cabin_audio: local_only
+  cabin_video: local_only
+
+automatic_sync_allowed:
+  - mobile_edge.health
+  - mobile_edge.sync_manifest
+
+explicit_review_required:
+  - mobile_edge.media_reference
+  - events_with_exact_location
+  - events_with_cabin_audio
+  - events_with_cabin_video
+  - events_labeled_important_conversation
+
+prohibited_by_default:
+  - public_export_without_review
+  - deletion_after_successful_sync
+  - sync_to_untrusted_peer
+  - cloud_upload_without_policy

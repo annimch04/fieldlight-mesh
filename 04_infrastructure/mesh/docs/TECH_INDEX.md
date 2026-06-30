@@ -4,6 +4,7 @@ Use this index for runnable/runtime materials. This is the technical path.
 
 - **CI** — repo root [`.github/workflows/ci.yml`](../../../.github/workflows/ci.yml) (Python mesh + Go probe). Local parity: `make -C 04_infrastructure/mesh ci-local` after `make install`.
 
+- `MOBILE_EDGE_NODE.md` - Supra / vehicle-based Mobile Edge Node technical profile, event schema, sync policy, and Phase 1 build contract
 - `NET_LAYER.md` - runbook for SIL over TCP
 - `INGRESS_CONTRACT.md` - ingress/validation/dispatch contract
 - `IDENTITY_AND_SIGNATURES.md` - Ed25519 local identity, signed objects, and verification rules
@@ -27,6 +28,8 @@ Code paths:
 - `../scripts/lan_presence_advertise.py` - register `_fieldlight._tcp` + TXT
 - `../discovery/libp2p_peer_probe/` - Go libp2p mDNS + connection JSON log
 - `../config/lemur_route_schema.yml` - routing source of truth
+- `../config/mobile_edge/` - Mobile Edge Node event schema and sync policy
+- `../nodes/supra_edge_node.yml` - planned Supra vehicle edge node profile
 - `../send/examples/` - test payloads
 
 Publishing boundary:

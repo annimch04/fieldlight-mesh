@@ -1,0 +1,76 @@
+# Mobile Edge Node event schema for Phase 1.
+version: 1
+schema_id: fieldlight.mobile_edge.event.v1
+node_class: vehicle_edge
+
+required_fields:
+  - event_id
+  - event_type
+  - node_id
+  - created_at
+  - custody
+
+common_fields:
+  event_id: string
+  event_type:
+    enum:
+      - mobile_edge.bookmark
+      - mobile_edge.health
+      - mobile_edge.sync_manifest
+      - mobile_edge.media_reference
+  node_id: mesh_uri
+  created_at: iso8601
+  operator: string
+  custody:
+    enum:
+      - local_only
+      - sync_queued
+      - synced_to_trusted_peer
+      - export_requires_review
+  consent_scope:
+    enum:
+      - local-only
+      - authorship-aware
+      - review-required
+      - temporal
+  location:
+    lat: float_optional
+    lon: float_optional
+    precision: exact | approximate | withheld
+  vehicle:
+    odometer_mi: float_optional
+    speed_mph: float_optional
+    ignition_state: on | off | accessory | unknown
+  media_refs:
+    type: list
+    item_fields:
+      - ref_id
+      - media_type
+      - local_path
+      - sha256_optional
+      - time_window_optional
+  labels:
+    type: list
+    examples:
+      - field_note
+      - beautiful
+      - research
+      - near_miss
+      - important_conversation
+      - strange_interaction
+      - institute_idea
+      - follow_up_later
+  note:
+    type: string_optional
+  sync:
+    queued_for: mesh_uri_optional
+    queued_at: iso8601_optional
+    synced_at: iso8601_optional
+    sync_status: local | queued | sent | acknowledged | failed
+
+rules:
+  - Raw media remains local by default.
+  - Location is sensitive and must be local-first.
+  - Cabin audio or video requires explicit opt-in marker.
+  - Human bookmarks outrank inferred labels.
+  - AI summaries must reference source event IDs.

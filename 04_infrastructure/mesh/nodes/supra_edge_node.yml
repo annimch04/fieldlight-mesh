@@ -1,0 +1,76 @@
+# Fieldlight Mesh node profile: Supra Edge Node
+version: 1
+node_id: mesh://fieldlight.anni.supra
+node_name: supra-edge-node
+node_class: vehicle_edge
+status: planned_phase_1_build
+operator: Anni McHenry
+
+relationships:
+  canonical_controller: mesh://fieldlight.anni.lemur
+  publishing_layer: mesh://fieldlight.anni.astra
+  home_compute_node: mesh://fieldlight.anni.home
+
+trust:
+  default_trust_required: peer
+  accepts_remote_control: false
+  sync_requires_explicit_policy: true
+  local_custody_required: true
+
+hardware:
+  compute: Raspberry Pi 5
+  storage: SSD 1-2TB encrypted local storage
+  interface: iPad cockpit
+  power: auxiliary LiFePO4 battery with DC-DC charging
+
+inputs:
+  required_phase_1:
+    - timestamp
+    - gps
+    - manual_bookmark
+    - local_event_log
+  planned:
+    - front_dashcam
+    - rear_dashcam
+    - obd_ii
+    - voice_note
+    - weather
+    - nearby_landmarks
+  optional_sensitive:
+    - cabin_microphone
+    - cabin_camera
+    - biometric_streams
+
+services:
+  local_api:
+    required: true
+    endpoints:
+      - GET /health
+      - POST /bookmark
+      - GET /events/recent
+      - POST /sync/queue
+      - POST /sync/run
+  mesh_runtime:
+    transport: SIL over TCP on trusted network or Tailscale
+    initial_messages:
+      - ping
+      - message
+      - trace
+      - query
+      - response
+
+storage_policy:
+  raw_media_default: local_only
+  location_default: local_first_sensitive
+  bookmark_default: sync_allowed_to_trusted_home
+  ai_summary_default: local_until_explicit_sync
+  deletion_after_sync: forbidden_by_default
+
+phase_1_success_criteria:
+  - node boots with stable node_id
+  - node responds to mesh ping
+  - manual bookmark can be created locally
+  - bookmark binds timestamp and GPS
+  - event is written to local append-only log
+  - event can be queued for explicit sync
+  - sync manifest can be sent to trusted home node

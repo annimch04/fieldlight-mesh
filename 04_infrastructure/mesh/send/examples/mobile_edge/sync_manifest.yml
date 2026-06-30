@@ -1,0 +1,26 @@
+# Mobile Edge Node sync manifest carried over existing SIL `message` route.
+message_type: message
+from: mesh://fieldlight.anni.supra
+to: mesh://fieldlight.anni.lemur
+intent: mobile_edge_sync_manifest
+msg_id: supra-sync-demo-001
+
+event_type: mobile_edge.sync_manifest
+manifest:
+  node_id: mesh://fieldlight.anni.supra
+  created_at: 2026-06-30T12:00:00-05:00
+  custody: sync_queued
+  consent_scope: review-required
+  event_count: 3
+  events:
+    - event_id: supra-event-0001
+      event_type: mobile_edge.bookmark
+      labels: [field_note, institute_idea]
+      media_included: false
+    - event_id: supra-event-0002
+      event_type: mobile_edge.health
+      media_included: false
+    - event_id: supra-event-0003
+      event_type: mobile_edge.media_reference
+      media_included: false
+      review_required: true

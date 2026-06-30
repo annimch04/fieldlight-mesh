@@ -38,6 +38,7 @@ See `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md` for the current publishing
 - `04_infrastructure/mesh/`: Core system protocols, message formats, routing logic (`Makefile` for local checks)
 - `.github/workflows/ci.yml`: GitHub Actions — Python mesh smoke + Go `libp2p_peer_probe` build
 - `04_infrastructure/mesh/docs/TECH_INDEX.md`: Technical/operator documentation entrypoint
+- `04_infrastructure/mesh/docs/MOBILE_EDGE_NODE.md`: Supra / vehicle-based Mobile Edge Node technical profile and Phase 1 build contract
 - `04_infrastructure/mesh/docs/CANON_INDEX.md`: Canon/symbolic documentation entrypoint
 - `04_infrastructure/mesh/docs/PUBLISHING_LAYER.md`: Mac/Octopus publishing boundary and export workflow
 - `04_infrastructure/mesh/docs/MAC_ALPHA_RUNBOOK.md`: Astra + peer install and bidirectional LAN acceptance test
