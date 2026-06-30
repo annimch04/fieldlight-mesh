@@ -13,6 +13,21 @@ import yaml
 from .client import send_sil_message
 from .identity import identity_exists, initialize_identity, load_identity
 from .inbox import list_messages
+from .mobile_edge import (
+    DEFAULT_NODE_ID as DEFAULT_MOBILE_NODE_ID,
+    DEFAULT_SYNC_TARGET,
+    MobileEdgeHTTPServer,
+    create_bookmark_event,
+    default_mobile_edge_root,
+    event_to_sil_message,
+    generate_sync_manifest,
+    health_payload,
+    ingest_media_reference,
+    list_events as list_mobile_events,
+    manifest_to_sil_message,
+    mobile_edge_paths,
+    normalize_labels,
+)
 from .peer_registry import load_registry, resolve_sil_address
 from .routing import load_route_schema
 from .server import SILMeshServer, load_trusted_peers
@@ -22,6 +37,20 @@ from .town_square import create_post, create_reply, export_bundle, import_bundle
 
 def _home(args: argparse.Namespace) -> Path:
     return Path(args.home).expanduser()
+
+
+def _parse_mapping(value: str | None, *, fallback: dict[str, Any]) -> dict[str, Any]:
+    if not value:
+        return fallback
+    parsed = yaml.safe_load(value)
+    if not isinstance(parsed, dict):
+        raise ValueError("expected a YAML/JSON object")
+    return parsed
+
+
+def _mobile_paths(args: argparse.Namespace, home: Path):
+    root = Path(args.root).expanduser() if args.root else default_mobile_edge_root(home)
+    return mobile_edge_paths(root)
 
 
 def cmd_init(args: argparse.Namespace) -> int:
@@ -312,6 +341,75 @@ def cmd_town(args: argparse.Namespace) -> int:
     raise ValueError(f"unknown town action: {args.town_action}")
 
 
+def cmd_mobile_edge(args: argparse.Namespace) -> int:
+    home = _home(args)
+    root_paths = _mobile_paths(args, home)
+    node_id = args.node_id or DEFAULT_MOBILE_NODE_ID
+    if args.mobile_action == "init":
+        root_paths.media_dir.mkdir(parents=True, exist_ok=True)
+        health_payload(db_path=root_paths.db, node_id=node_id, storage_root=root_paths.root)
+        print(f"Initialized Supra mobile edge store at {root_paths.root}")
+        print(f"SQLite store: {root_paths.db}")
+        print(f"Media archive: {root_paths.media_dir}")
+        return 0
+    if args.mobile_action == "bookmark":
+        event = create_bookmark_event(
+            db_path=root_paths.db,
+            node_id=node_id,
+            labels=normalize_labels(args.labels),
+            note=args.note or "",
+            location=_parse_mapping(args.location, fallback={"precision": "withheld"}),
+            vehicle=_parse_mapping(args.vehicle, fallback={"ignition_state": "unknown"}),
+            sync_target=args.to,
+        )
+        if args.as_message:
+            print(yaml.safe_dump(event_to_sil_message(event, to=args.to), default_flow_style=False, sort_keys=False), end="")
+        else:
+            print(yaml.safe_dump(event, default_flow_style=False, sort_keys=False), end="")
+        return 0
+    if args.mobile_action == "recent":
+        rows = list_mobile_events(root_paths.db, limit=args.limit)
+        print(yaml.safe_dump(rows, default_flow_style=False, sort_keys=False), end="")
+        return 0
+    if args.mobile_action == "ingest-media":
+        event = ingest_media_reference(
+            db_path=root_paths.db,
+            node_id=node_id,
+            media_path=Path(args.path),
+            labels=normalize_labels(args.labels, default="media_reference"),
+            note=args.note or "",
+            location=_parse_mapping(args.location, fallback={"precision": "withheld"}),
+            vehicle=_parse_mapping(args.vehicle, fallback={"ignition_state": "unknown"}),
+        )
+        print(yaml.safe_dump(event, default_flow_style=False, sort_keys=False), end="")
+        return 0
+    if args.mobile_action == "manifest":
+        manifest = generate_sync_manifest(
+            db_path=root_paths.db,
+            node_id=node_id,
+            target=args.to,
+            review=args.review,
+            limit=args.limit,
+        )
+        if args.as_message:
+            print(yaml.safe_dump(manifest_to_sil_message(manifest, from_node=node_id, to=args.to), default_flow_style=False, sort_keys=False), end="")
+        else:
+            print(yaml.safe_dump(manifest, default_flow_style=False, sort_keys=False), end="")
+        return 0
+    if args.mobile_action == "serve":
+        server = MobileEdgeHTTPServer((args.host, args.port), root=root_paths.root, node_id=node_id, quiet=args.quiet)
+        print(f"Supra mobile edge cockpit listening on http://{args.host}:{args.port}")
+        print("Use a trusted LAN/Tailscale path only; Phase 1 has no login wall.")
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print("\nStopping.")
+        finally:
+            server.server_close()
+        return 0
+    raise ValueError(f"unknown mobile-edge action: {args.mobile_action}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="fieldlight-mesh", description="Fieldlight local-first mesh alpha")
     p.add_argument("--home", default=str(default_home()), help="Node state directory")
@@ -379,6 +477,36 @@ def build_parser() -> argparse.ArgumentParser:
     ty.add_argument("to")
     ty.add_argument("--limit", type=int, default=500)
     town.set_defaults(func=cmd_town)
+    mobile = sub.add_parser("mobile-edge", help="Supra Mobile Edge Node tools")
+    mobile.add_argument("--root", help="Mobile edge storage root; defaults to <home>/mobile_edge")
+    mobile.add_argument("--node-id", default=DEFAULT_MOBILE_NODE_ID)
+    ms = mobile.add_subparsers(dest="mobile_action", required=True)
+    ms.add_parser("init", help="Initialize local SQLite store and media archive")
+    mb = ms.add_parser("bookmark", help="Create a human-authored drive bookmark")
+    mb.add_argument("--labels", default="field_note", help="Comma-separated labels")
+    mb.add_argument("--note", default="")
+    mb.add_argument("--location", help='YAML/JSON object, e.g. \'{"precision":"withheld"}\'')
+    mb.add_argument("--vehicle", help='YAML/JSON object, e.g. \'{"ignition_state":"on"}\'')
+    mb.add_argument("--to", default=DEFAULT_SYNC_TARGET)
+    mb.add_argument("--as-message", action="store_true", help="Print mesh-compatible SIL message")
+    mr = ms.add_parser("recent", help="List recent mobile edge events")
+    mr.add_argument("--limit", type=int, default=25)
+    mi = ms.add_parser("ingest-media", help="Index a copied VIOFO/dashcam file as a local media reference")
+    mi.add_argument("path")
+    mi.add_argument("--labels", default="media_reference")
+    mi.add_argument("--note", default="")
+    mi.add_argument("--location", help="YAML/JSON object")
+    mi.add_argument("--vehicle", help="YAML/JSON object")
+    mm = ms.add_parser("manifest", help="Generate an explicit sync manifest")
+    mm.add_argument("--to", default=DEFAULT_SYNC_TARGET)
+    mm.add_argument("--review", action="store_true", help="Permit protected media/location entries into manifest metadata")
+    mm.add_argument("--limit", type=int, default=100)
+    mm.add_argument("--as-message", action="store_true", help="Print mesh-compatible SIL message")
+    mv = ms.add_parser("serve", help="Serve local iPad cockpit and API")
+    mv.add_argument("--host", default="127.0.0.1")
+    mv.add_argument("--port", type=int, default=8765)
+    mv.add_argument("--quiet", action="store_true")
+    mobile.set_defaults(func=cmd_mobile_edge)
     return p
 
 

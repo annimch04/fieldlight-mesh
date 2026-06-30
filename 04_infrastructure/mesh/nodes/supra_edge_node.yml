@@ -1,10 +1,11 @@
 # Fieldlight Mesh node profile: Supra Edge Node
-version: 1
+version: 2
 node_id: mesh://fieldlight.anni.supra
 node_name: supra-edge-node
 node_class: vehicle_edge
-status: planned_phase_1_build
+status: phase_1_build
 operator: Anni McHenry
+phase_1_goal: drive_bookmark_loop
 
 relationships:
   canonical_controller: mesh://fieldlight.anni.lemur
@@ -19,24 +20,26 @@ trust:
 
 hardware:
   compute: Raspberry Pi 5
-  storage: SSD 1-2TB encrypted local storage
+  storage: Samsung T7 SSD
+  network: GL.iNet router
+  visual_source: VIOFO dual 4K dash cam
+  telemetry_source: BLE OBD-II adapter
+  voice_source: Shure MV7+ microphone optional
   interface: iPad cockpit
-  power: auxiliary LiFePO4 battery with DC-DC charging
+  power: auxiliary vehicle power plan pending
 
 inputs:
   required_phase_1:
     - timestamp
-    - gps
     - manual_bookmark
     - local_event_log
-  planned:
-    - front_dashcam
-    - rear_dashcam
-    - obd_ii
-    - voice_note
-    - weather
-    - nearby_landmarks
+    - sync_manifest
+  phase_1_context:
+    - gps_or_route_when_available
+    - obd_ii_snapshot_when_available
+    - viofo_media_reference_after_drive
   optional_sensitive:
+    - shure_voice_note
     - cabin_microphone
     - cabin_camera
     - biometric_streams
@@ -48,29 +51,46 @@ services:
       - GET /health
       - POST /bookmark
       - GET /events/recent
-      - POST /sync/queue
-      - POST /sync/run
+      - POST /media/ingest
+      - POST /sync/manifest
+  cockpit:
+    surface: local web page served from Raspberry Pi
+    intended_client: iPad on GL.iNet or Tailscale trusted path
+    auth_phase_1: trusted_network_only
   mesh_runtime:
     transport: SIL over TCP on trusted network or Tailscale
     initial_messages:
       - ping
       - message
-      - trace
       - query
       - response
 
 storage_policy:
+  event_store: SQLite primary
+  export_formats:
+    - YAML
+    - JSON
   raw_media_default: local_only
   location_default: local_first_sensitive
   bookmark_default: sync_allowed_to_trusted_home
   ai_summary_default: local_until_explicit_sync
   deletion_after_sync: forbidden_by_default
 
+sync_policy:
+  target_first: mesh://fieldlight.anni.lemur
+  manifest_allowed_without_media: true
+  raw_media_requires_review: true
+  exact_location_requires_review: true
+  protected_labels_require_review:
+    - important_conversation
+
 phase_1_success_criteria:
   - node boots with stable node_id
-  - node responds to mesh ping
+  - local API health returns ok
   - manual bookmark can be created locally
-  - bookmark binds timestamp and GPS
-  - event is written to local append-only log
-  - event can be queued for explicit sync
-  - sync manifest can be sent to trusted home node
+  - bookmark binds timestamp, label, note, and available vehicle/location context
+  - event is written to SQLite on Samsung T7-backed storage
+  - VIOFO clip can be indexed after the drive as a media reference
+  - sync manifest can be generated with protected media withheld
+  - raw media remains local on T7
+  - node can be reached over trusted GL.iNet/Tailscale path

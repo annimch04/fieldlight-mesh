@@ -1,7 +1,8 @@
 # Mobile Edge Node sync policy for Phase 1.
-version: 1
+version: 2
 policy_id: fieldlight.mobile_edge.sync_policy.v1
 node_id: mesh://fieldlight.anni.supra
+phase_1_goal: drive_bookmark_loop
 
 trusted_sync_targets:
   - mesh://fieldlight.anni.lemur
@@ -13,6 +14,7 @@ defaults:
   approximate_location: sync_allowed_to_trusted_targets
   manual_bookmarks: sync_allowed_to_trusted_targets
   health_status: sync_allowed_to_trusted_targets
+  sync_manifest: sync_allowed_to_trusted_targets
   ai_summaries: review_required
   cabin_audio: local_only
   cabin_video: local_only
@@ -28,8 +30,21 @@ explicit_review_required:
   - events_with_cabin_video
   - events_labeled_important_conversation
 
+protected_fields:
+  - media_refs.local_path
+  - location.lat
+  - location.lon
+  - vehicle.vin
+
 prohibited_by_default:
+  - raw_media_upload_without_review
   - public_export_without_review
   - deletion_after_successful_sync
   - sync_to_untrusted_peer
   - cloud_upload_without_policy
+
+manifest_rules:
+  include_event_metadata: true
+  include_raw_media: false
+  include_media_hashes: true
+  require_review_for_protected_events: true

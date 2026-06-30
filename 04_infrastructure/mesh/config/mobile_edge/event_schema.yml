@@ -1,7 +1,11 @@
 # Mobile Edge Node event schema for Phase 1.
-version: 1
+version: 2
 schema_id: fieldlight.mobile_edge.event.v1
 node_class: vehicle_edge
+primary_store: sqlite
+export_formats:
+  - yaml
+  - json
 
 required_fields:
   - event_id
@@ -36,11 +40,14 @@ common_fields:
   location:
     lat: float_optional
     lon: float_optional
+    route_ref: string_optional
     precision: exact | approximate | withheld
   vehicle:
     odometer_mi: float_optional
     speed_mph: float_optional
+    rpm: float_optional
     ignition_state: on | off | accessory | unknown
+    obd_source: ble_obd_ii | manual | unavailable | unknown
   media_refs:
     type: list
     item_fields:
@@ -49,6 +56,7 @@ common_fields:
       - local_path
       - sha256_optional
       - time_window_optional
+      - source
   labels:
     type: list
     examples:
@@ -60,6 +68,8 @@ common_fields:
       - strange_interaction
       - institute_idea
       - follow_up_later
+      - viofo_front
+      - viofo_rear
   note:
     type: string_optional
   sync:
@@ -67,10 +77,13 @@ common_fields:
     queued_at: iso8601_optional
     synced_at: iso8601_optional
     sync_status: local | queued | sent | acknowledged | failed
+    review_required: boolean_optional
 
 rules:
+  - SQLite is the local source of truth; YAML and JSON are exports.
   - Raw media remains local by default.
   - Location is sensitive and must be local-first.
   - Cabin audio or video requires explicit opt-in marker.
   - Human bookmarks outrank inferred labels.
   - AI summaries must reference source event IDs.
+  - VIOFO clips are indexed as references after file copy; Phase 1 does not stream live dashcam video.

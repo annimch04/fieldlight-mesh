@@ -5,6 +5,7 @@ Use this index for runnable/runtime materials. This is the technical path.
 - **CI** — repo root [`.github/workflows/ci.yml`](../../../.github/workflows/ci.yml) (Python mesh + Go probe). Local parity: `make -C 04_infrastructure/mesh ci-local` after `make install`.
 
 - `MOBILE_EDGE_NODE.md` - Supra / vehicle-based Mobile Edge Node technical profile, event schema, sync policy, and Phase 1 build contract
+- `SUPRA_PHASE1_RUNBOOK.md` - Raspberry Pi 5, Samsung T7, GL.iNet, VIOFO, BLE OBD-II, Shure MV7+, and first-drive build runbook
 - `NET_LAYER.md` - runbook for SIL over TCP
 - `INGRESS_CONTRACT.md` - ingress/validation/dispatch contract
 - `IDENTITY_AND_SIGNATURES.md` - Ed25519 local identity, signed objects, and verification rules
@@ -21,7 +22,7 @@ Use this index for runnable/runtime materials. This is the technical path.
 
 Code paths:
 
-- `../fieldlight_mesh/` - runtime implementation (`lan_mdns.py`, `peer_registry.py`, …)
+- `../fieldlight_mesh/` - runtime implementation (`lan_mdns.py`, `peer_registry.py`, `mobile_edge.py`, …)
 - `../scripts/sil_mesh.py` - CLI `send` / `receive` / `discover`
 - `../config/discovered_peers.example.yml` - registry shape (`discovered_peers.yml` is gitignored)
 - `../scripts/lan_presence_browse.py` - stream LAN mDNS presence
@@ -29,7 +30,7 @@ Code paths:
 - `../discovery/libp2p_peer_probe/` - Go libp2p mDNS + connection JSON log
 - `../config/lemur_route_schema.yml` - routing source of truth
 - `../config/mobile_edge/` - Mobile Edge Node event schema and sync policy
-- `../nodes/supra_edge_node.yml` - planned Supra vehicle edge node profile
+- `../nodes/supra_edge_node.yml` - Supra vehicle edge node profile
 - `../send/examples/` - test payloads
 
 Publishing boundary:
